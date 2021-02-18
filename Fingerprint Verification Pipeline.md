@@ -1,0 +1,21 @@
+- Preprocessing
+    - Segmentation
+    - Normalization
+    - Enhancement
+    - Binarization
+    - Thinning
+- Fingerprint Features
+    - Ridge orientation field
+        - Finding fingerprint orientation fields
+        - Estimation of Orientation
+        - Reliability of estimation for orientation angle
+        - Finding fingerprint orientation fields based on PCA Algorithm
+        - Strngth of orientation
+    - Minutiae
+        - Minutiae Extraction
+        - False Minutia Removal: Algorithm
+    - Matching
+        - Alignment using Generalized Hough Transform Algorithm
+        - Pairing of corresponding minutiae
+        - Computing Match Score
+    - Inner holes (sweat pores) and outer contours (edges) of the ridges
