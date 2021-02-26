@@ -44,7 +44,6 @@
     - minutae count in query fingerprint: 62
     - count of total matched minutae: 14
 
-
 ---
 ## How to run the program
 

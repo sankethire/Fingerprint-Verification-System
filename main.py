@@ -72,8 +72,7 @@ def orientation(fingerprint, block_size):
 		for j in range(0,width):
 			si, ei = max(0, i-block_size//2), min(i+block_size//2, height)
 			sj, ej = max(0, j-block_size//2), min(j+block_size//2, width)
-			V_x[i, j] = np.sum(2*Gx[si: ei, sj: ej]*Gy[si: ei, sj: ej])
-			V_y[i, j] = np.sum(Gx[si: ei, sj: ej]**2-Gy[si: ei, sj: ej]**2)
+			V_x[i, j], V_y[i, j]  = np.sum(2*Gx[si: ei, sj: ej]*Gy[si: ei, sj: ej]), np.sum(Gx[si: ei, sj: ej]**2-Gy[si: ei, sj: ej]**2)
 
 	Gaussian_std = 1
 	Gaussian_Vx = cv.GaussianBlur(V_x, (2*block_size+1, 2*block_size+1), Gaussian_std)
@@ -164,10 +163,8 @@ def minutae_extraction(fingerprint, enhanced_mask, block_size):
 	# 		cv.circle(minutae_image, index, radius=3, color=(0,255,0), thickness=1)
 	
 	def false_clustered_minutae_removal():
-		minutae_coordinates = list(pixelindex_to_cnp)
-		thresh_d = block_size/4
-		got_minutae_cluster = False
-		minutae_points_cluster = set()
+		got_minutae_cluster, minutae_points_cluster = False, set()
+		minutae_coordinates, thresh_d  = list(pixelindex_to_cnp), block_size/4
 
 		for i in range(1, len(minutae_coordinates)):
 			for j in range(0, i):
@@ -391,8 +388,10 @@ def showimage(imglabel, img):
 
 if __name__ == "__main__":
 
+	# loading person-wise fingerprint images in db
 	db = load_db("DB2_B")
 
+	# matching minutae points of fingerprint(101_1.tif) and fingerprint(101_2.tif) in DB2_B
 	match_count, template_minutae_count, query_minutae_count = fingerprint_matching(db[101][0], db[101][1])
 
 	print("minutae count in template fingerprint: " + str(template_minutae_count))	
