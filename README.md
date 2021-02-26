@@ -2,17 +2,10 @@
 
 ### Requirements
 1. OpenCV: ```pip3 install opencv-python```
----
-2. OpenCV Contrib Python for image thinning function:
-```pip3 install opencv-contrib-python```
-3. Numpy
-```
-pip3 install numpy
-```
-4. Fingerprint Enhancer: Package used for fingerprint enhancement. It calculates frequency and orientation map for applying Gabor Filter on Normalized image. Since Frequency map calculation was not included in lecture modules and reference books, I used it for fingerprint enhancement purpose.
-```
-pip3 install fingerprint_enhancer
-```
+2. OpenCV Contrib Python for image thinning function: ```pip3 install opencv-contrib-python```
+3. Numpy: ```pip3 install numpy```
+4. Fingerprint Enhancer: ```pip3 install fingerprint_enhancer```
+- This package used for fingerprint enhancement. It calculates frequency and orientation map for applying Gabor Filter on Normalized image. Since Frequency map calculation was not included in lecture modules and reference books, I used it for fingerprint enhancement purpose.
 
 
 
