@@ -10,23 +10,40 @@
 
 ## Fingerprint Verification Experiments
 
-### Experiment 1
-- Template Image: "FVC2000/DB2_B/101_1.tif"
-- Query Image: "FVC2000/DB2_B/101_2.tif"
+### Experiment 1 (Different Fingerprints of Same Person)
+- Template Image (Clear Fingerprint): "FVC2000/DB2_B/101_1.tif"
+- Query Image (Clear Fingerprint): "FVC2000/DB2_B/101_2.tif"
 
 - Results
-    - minutae count in template fingerprint: 109
-    - minutae count in query fingerprint: 96
-    - count of total matched minutae: 63
+    - minutae count in template fingerprint: 48
+    - minutae count in query fingerprint: 36
+    - count of total matched minutae: 30
 
 
-### Experiment 2
-- Template Image: "FVC2000/DB2_B/101_1.tif"
-- Query Image: "FVC2000/DB2_B/108_8.tif"
+### Experiment 2 (Different Fingerprints of Different Persons)
+- Template Image (Clear Fingerprint): "FVC2000/DB2_B/101_1.tif"
+- Query Image (Noisy Fingerprint): "FVC2000/DB2_B/108_8.tif"
 - Results:
-    - minutae count in template fingerprint: 109
-    - minutae count in query fingerprint: 315
-    - count of total matched minutae: 0
+    - minutae count in template fingerprint: 48
+    - minutae count in query fingerprint: 166
+    - count of total matched minutae: 47
+
+### Experiment 3 (Different Fingerprints of Different Persons)
+- Template Image (Clear Fingerprint): "FVC2000/DB2_B/101_1.tif"
+- Query Image(Clear Fingerprint): "FVC2000/DB2_B/102_3.tif"
+- Results:
+    - minutae count in template fingerprint: 48
+    - minutae count in query fingerprint: 86
+    - count of total matched minutae: 39
+
+### Experiment 4 (Different Fingerprints of Different Persons)
+- Template Image (Clear Fingerprint): "FVC2000/DB2_B/101_3.tif"
+- Query Image(Clear Fingerprint): "FVC2000/DB2_B/105_6.tif"
+- Results:
+    - minutae count in template fingerprint: 49
+    - minutae count in query fingerprint: 62
+    - count of total matched minutae: 14
+
 
 ---
 ## How to run the program

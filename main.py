@@ -202,13 +202,17 @@ def minutae_extraction(fingerprint, enhanced_mask, block_size):
 			break
 		minuate_clusters_left = false_clustered_minutae_removal()
 
+	minutae_count = 0
+
 	for index in true_minutaes:
 		if index in pixelindex_to_cnp and pixelindex_to_cnp[index] == 1:
+			minutae_count += 1
 			cv.circle(minutae_image, index, radius=3, color=(0,0,255), thickness=1)
 		elif index in pixelindex_to_cnp and pixelindex_to_cnp[index] == 3:
+			minutae_count += 1
 			cv.circle(minutae_image, index, radius=3, color=(0,255,0), thickness=1)
 
-	return minutae_image, pixelindex_to_cnp
+	return minutae_image, pixelindex_to_cnp, minutae_count
 
 def minutae_image_points(fingerprint):
 	block_size = 10
@@ -235,7 +239,7 @@ def minutae_image_points(fingerprint):
 	opening = cv.morphologyEx(enhanced_mask, cv.MORPH_OPEN, kernel)
 	# closing removes the noise inside the segmentation boundary line
 	enhanced_mask = cv.morphologyEx(opening, cv.MORPH_CLOSE, kernel)
-	minutae_image, pixelindex_to_cnp = minutae_extraction(thinned_image.astype(np.float64), enhanced_mask, block_size)
+	minutae_image, pixelindex_to_cnp, minutae_count = minutae_extraction(thinned_image.astype(np.float64), enhanced_mask, block_size)
 
 	showimage("minutae points after false positives removal", minutae_image)
 
@@ -263,11 +267,11 @@ def minutae_image_points(fingerprint):
 	orientation_field = draw_orientation_field(normalized_image, orientation_image, normalized_image, block_size, orientation_angles)
 	showimage("orientation_field", orientation_field)
 
-	return minutae_image, pixelindex_to_cnp, orientation_angles
+	return minutae_image, pixelindex_to_cnp, orientation_angles, minutae_count
 
 def alignment(template_image, query_image):
-	_, template_xy, template_orientation = minutae_image_points(template_image)
-	_, query_xy, query_orientation = minutae_image_points(query_image)
+	_, template_xy, template_orientation, minutae_count1 = minutae_image_points(template_image)
+	_, query_xy, query_orientation, minutae_count2 = minutae_image_points(query_image)
 	
 	block_size = 10
 
@@ -284,8 +288,9 @@ def alignment(template_image, query_image):
 		for j in range(0, len(query_xy)):
 			query_y, query_x = query_xy[j][0], query_xy[j][1]
 			del_theta = template_orientation[template_x][template_y] - query_orientation[query_x][query_y]
-			delta_x = template_x - query_x*(np.cos(del_theta)) - query_y*(np.sin(del_theta))
-			delta_y = template_y + query_x*(np.sin(del_theta)) - query_y*(np.cos(del_theta))
+			del_theta = min(del_theta, 2*np.pi - del_theta)
+			delta_x = template_x - query_x*(np.cos(del_theta)) + query_y*(np.sin(del_theta))
+			delta_y = template_y - query_x*(np.sin(del_theta)) - query_y*(np.cos(del_theta))
 			del_theta, delta_x, delta_y = new_round(math.degrees(del_theta),5), new_round(delta_x, block_size), new_round(delta_y, block_size)
 			if (del_theta, delta_x, delta_y) in acc:
 				acc[(del_theta, delta_x, delta_y)] += 1
@@ -296,13 +301,13 @@ def alignment(template_image, query_image):
 	theta, x, y = max(acc, key=acc.get)
 	# print("max: " + str(acc[(theta, x, y)]))
 	align = math.radians(theta), x, y
-	return align, (template_xy, template_orientation), (query_xy, query_orientation)
+	return align, (template_xy, template_orientation), (query_xy, query_orientation), (minutae_count1, minutae_count2)
 
-def minutae_pairing(minutae_set_t, minutae_set_q, align):
+def minutae_pairing(minutae_set_t, minutae_set_q, align, minutae_count_tq):
 	block_size = 10
 	minutae_pairs=[]
-	flag_t = [0 for i in range(len(minutae_set_t[0]))]
-	flag_q = [0 for i in range(len(minutae_set_q[0]))]
+	flag_t = [0 for i in range(minutae_count_tq[0])]
+	flag_q = [0 for i in range(minutae_count_tq[1])]
 	pair_count = 0
 	
 	template_xy = minutae_set_t[0]
@@ -321,14 +326,15 @@ def minutae_pairing(minutae_set_t, minutae_set_q, align):
 	thresh_r = math.degrees(20)
 	thresh_d = block_size
 
-	for i in range(0,len(template_xy)):
+	for i in range(0,minutae_count_tq[0]):
 		template_y, template_x = template_xy[i][0], template_xy[i][1]
-		for j in range(0, len(query_xy)):
+		for j in range(0, minutae_count_tq[1]):
 			query_y, query_x = query_xy[j][0], query_xy[j][1]
 			
 			del_theta = template_orientation[template_x][template_y] - query_orientation[query_x][query_y] + atheta
-			delta_x = template_x - query_x*(np.cos(atheta)) - query_y*(np.sin(atheta)) + ax
-			delta_y = template_y + query_x*(np.sin(atheta)) - query_y*(np.cos(atheta)) + ay
+			del_theta = min(del_theta, 2*np.pi - del_theta)
+			delta_x = template_x - query_x*(np.cos(atheta)) + query_y*(np.sin(atheta)) - ax
+			delta_y = template_y - query_x*(np.sin(atheta)) - query_y*(np.cos(atheta)) - ay
 
 			# print(del_theta)
 
@@ -364,12 +370,12 @@ def fingerprint_matching(template_fingerprint_path, query_fingerprint_path):
 	fingerprint2 = cv.imread(query_fingerprint_path, 0)
 	showimage("original fingerprint2", fingerprint2)
 
-	align, minutae_set_t, minutae_set_q = alignment(fingerprint1, fingerprint2)
+	align, minutae_set_t, minutae_set_q, minutae_count_tq = alignment(fingerprint1, fingerprint2)
 	# deltheta, delx, dely = align
 	# print(deltheta, delx, dely)
-	match_count, minutae_pairs = minutae_pairing(minutae_set_t, minutae_set_q, align)
-	template_minutae_count = len(minutae_set_t[0])
-	query_minutae_count = len(minutae_set_q[0])
+	match_count, minutae_pairs = minutae_pairing(minutae_set_t, minutae_set_q, align, minutae_count_tq)
+	template_minutae_count = minutae_count_tq[0]
+	query_minutae_count = minutae_count_tq[1]
 
 	return match_count, template_minutae_count, query_minutae_count
 
@@ -393,4 +399,5 @@ if __name__ == "__main__":
 	print("minutae count in query fingerprint: " + str(query_minutae_count))	
 	print("count of total matched minutae: " + str(match_count))	
 
+	print("match score: ",  2*match_count/(template_minutae_count + query_minutae_count))
 
