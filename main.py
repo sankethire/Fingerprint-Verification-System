@@ -102,7 +102,7 @@ def minutae_extraction(fingerprint, enhanced_mask, block_size):
 				temp_image[i][j] = 0
 	
 
-
+	# Minutae Extraction with False Positives
 	minutae_image = cv.cvtColor(fingerprint.astype(np.uint8), cv.COLOR_GRAY2RGB)
 
 	false_minutae_image = minutae_image.copy()
@@ -136,8 +136,8 @@ def minutae_extraction(fingerprint, enhanced_mask, block_size):
 					pixelindex_to_cnp[(j,i)] = cnp
 	showimage("minutae points with false positives", false_minutae_image)
 
-	# print(len(pixelindex_to_cnp))
-
+	
+	# Removal of False minutae points (especially end points) present at segmentation boundary  
 	true_minutaes = set()
 	for k in pixelindex_to_cnp:
 		# print(k)
@@ -162,6 +162,8 @@ def minutae_extraction(fingerprint, enhanced_mask, block_size):
 	# 	elif pixelindex_to_cnp[index] == 3:
 	# 		cv.circle(minutae_image, index, radius=3, color=(0,255,0), thickness=1)
 	
+
+	# Removal of False Minutae Points present as cluster
 	def false_clustered_minutae_removal():
 		got_minutae_cluster, minutae_points_cluster = False, set()
 		minutae_coordinates, thresh_d  = list(pixelindex_to_cnp), block_size/4
@@ -201,6 +203,7 @@ def minutae_extraction(fingerprint, enhanced_mask, block_size):
 
 	minutae_count = 0
 
+	# drawing minutae points on fingerprint image
 	for index in true_minutaes:
 		if index in pixelindex_to_cnp and pixelindex_to_cnp[index] == 1:
 			minutae_count += 1
@@ -211,6 +214,7 @@ def minutae_extraction(fingerprint, enhanced_mask, block_size):
 
 	return minutae_image, pixelindex_to_cnp, minutae_count
 
+# wrapper function to perform preprocessing and minutae extraction
 def minutae_image_points(fingerprint):
 	block_size = 10
 	segmented_boundary, segmented_image = segmentation(fingerprint, block_size)
@@ -266,6 +270,7 @@ def minutae_image_points(fingerprint):
 
 	return minutae_image, pixelindex_to_cnp, orientation_angles, minutae_count
 
+# Fingerprint Coordinates Alignment using Generalized Hough Transform Algorithm 
 def alignment(template_image, query_image):
 	_, template_xy, template_orientation, minutae_count1 = minutae_image_points(template_image)
 	_, query_xy, query_orientation, minutae_count2 = minutae_image_points(query_image)
@@ -300,6 +305,7 @@ def alignment(template_image, query_image):
 	align = math.radians(theta), x, y
 	return align, (template_xy, template_orientation), (query_xy, query_orientation), (minutae_count1, minutae_count2)
 
+# Minutae Pairing Algorithm as per mentioned in lecture slides
 def minutae_pairing(minutae_set_t, minutae_set_q, align, minutae_count_tq):
 	block_size = 10
 	minutae_pairs=[]
@@ -343,6 +349,7 @@ def minutae_pairing(minutae_set_t, minutae_set_q, align, minutae_count_tq):
 			
 	return pair_count, minutae_pairs
 
+# # loading person-wise fingerprint images in db
 def load_db(db_directory_name):
 	db_path = "FVC_2000/" + db_directory_name
 	fp_imgs = os.listdir(db_path)
@@ -360,6 +367,7 @@ def load_db(db_directory_name):
 	# print(personwise_fps)
 	return personwise_fps
 
+# wrapper function which takes paths of 2 fingerprints and gives minutae match counts
 def fingerprint_matching(template_fingerprint_path, query_fingerprint_path):
 	fingerprint1 = cv.imread(template_fingerprint_path, 0)
 	showimage("original fingerprint1", fingerprint1)
@@ -376,7 +384,7 @@ def fingerprint_matching(template_fingerprint_path, query_fingerprint_path):
 
 	return match_count, template_minutae_count, query_minutae_count
 
-
+# To show image output using opencv function
 def showimage(imglabel, img):
 	cv.imshow(imglabel, img)
 	while True:
@@ -392,7 +400,7 @@ if __name__ == "__main__":
 	db = load_db("DB2_B")
 
 	# matching minutae points of fingerprint(101_1.tif) and fingerprint(101_2.tif) in DB2_B
-	match_count, template_minutae_count, query_minutae_count = fingerprint_matching(db[101][0], db[101][1])
+	match_count, template_minutae_count, query_minutae_count = fingerprint_matching(db[101][2], db[105][6])
 
 	print("minutae count in template fingerprint: " + str(template_minutae_count))	
 	print("minutae count in query fingerprint: " + str(query_minutae_count))	
