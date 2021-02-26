@@ -1,17 +1,21 @@
 # Fingerprint Verification System
 
-### Requirements
+## Requirements
 1. OpenCV: ```pip3 install opencv-python```
-2. OpenCV Contrib Python for image thinning function: ```pip3 install opencv-contrib-python```
+2. OpenCV (Contrib Python for image thinning function): ```pip3 install opencv-contrib-python```
 3. Numpy: ```pip3 install numpy```
 4. Fingerprint Enhancer: ```pip3 install fingerprint_enhancer```
     - This package used for fingerprint enhancement. It calculates frequency and orientation map for applying Gabor Filter on Normalized image. Since Frequency map calculation was not included in lecture modules and reference books, I used it for fingerprint enhancement purpose.
+---
 
-
+## Fingerprint Verification Experiments
 
 ### Experiment 1
 - Template Image: "FVC2000/DB2_B/101_1.tif"
 - Query Image: "FVC2000/DB2_B/101_2.tif"
+
+![Optional Text](./output images/DB2_B 101_1/original fingerprint 1.png)
+
 - Results
     - minutae count in template fingerprint: 109
     - minutae count in query fingerprint: 96
@@ -25,3 +29,10 @@
     - minutae count in template fingerprint: 109
     - minutae count in query fingerprint: 315
     - count of total matched minutae: 0
+
+---
+## How to run the program
+
+```
+python3 main.py
+```
