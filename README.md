@@ -14,8 +14,6 @@
 - Template Image: "FVC2000/DB2_B/101_1.tif"
 - Query Image: "FVC2000/DB2_B/101_2.tif"
 
-![Optional Text](./output images/DB2_B 101_1/original fingerprint 1.png)
-
 - Results
     - minutae count in template fingerprint: 109
     - minutae count in query fingerprint: 96

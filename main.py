@@ -57,7 +57,6 @@ def normalization(fingerprint, variance):
 				normalized_image[j][i] = m0 - rootval
 	return normalized_image
 
-
 def orientation(fingerprint, block_size):
 	Gx = cv.Sobel(fingerprint/255, cv.CV_64F, 0, 1, ksize=3)
 	Gy = cv.Sobel(fingerprint/255, cv.CV_64F, 1, 0, ksize=3)
@@ -88,73 +87,6 @@ def orientation(fingerprint, block_size):
 			orientation_angles[i][j] += np.pi/2
 
 	return orientation_angles
-
-# def frequency_map(fingerprint, block_size, orientation_angles):
-#     frequency = np.zeros(fingerprint.shape)
-#     height, width = fingerprint.shape
-#     for i in range(0,height,block_size):
-#         for j in range(0,width,block_size):
-#             block_orientation = orientation_angles[i//block_size, j//block_size]
-#             if block_orientation != 0:
-#                 block = fingerprint[i:min(height,i+block_size), j:min(width,j+block_size)]
-#                 average_block_orientation = np.average(orientation_angles[i:min(height,i+block_size), j:min(width,j+block_size)])
-#                 block_rotated = ndimage.rotate(block, (average_block_orientation/np.pi)*180+90, reshape=True, cval=255)
-#                 sum_of_ridges = np.sum(block_rotated, axis = 0)
-				
-def singularity_extraction(fingerprint, orientation_angles,segmented_boundary):
-	singularities = cv.cvtColor(fingerprint, cv.COLOR_GRAY2RGB)
-	rows, cols = len(orientation_angles)-2, len(orientation_angles[0])-2
-	red, green, blue = (255,0,0), (0,255,0), (0,0,255)
-	m=0
-	for i in range(3,rows):
-		for j in range(3, cols):
-			# if m<1:
-			#     print(np.sum(segmented_boundary[16*(i-2):16*(i+3),16*(j-2):16*(j+3)]) , math.pow(16*5, 2))
-			# else:
-			#     pass
-			# if np.sum(segmented_boundary[16*(i-2):16*(i+3),16*(j-2):16*(j+3)]) == math.pow(16*5, 2):
-			if True:
-				# print("here")
-				# Singularity can be
-				# 0 -> non-singular
-				# 1 -> loop
-				# -1 -> delta 
-				# 2 -> whorl
-				singularity = 0
-				# orientation angles nearby current index in 3x3 block
-				pixel_pos = [(-1,-1), (-1,0), (-1,1), (0,1), (1,1), (1,0), (1,-1), (0,-1), (-1,-1)]
-				angles = []
-				for i1 in range(0,9):
-						angles.append(math.degrees(orientation_angles[i-pixel_pos[i1][0]][j-pixel_pos[i1][1]]))
-				# print(angles)
-				poincare_index = 0
-				for i2 in range(0, len(angles)-1):
-					delta_angle = angles[i2]-angles[i2+1]
-					if delta_angle > 90:
-						delta_angle -= 180
-					elif delta_angle < -90:
-						delta_angle += 180
-					poincare_index += delta_angle
-				error = 1
-				if poincare_index in range(180-error, 180+error+1):
-					# loop
-					singularity = 1
-				elif poincare_index in range(-180-error, -180+error+1):
-					# delta
-					singularity = -1
-				elif poincare_index in range(360-error, 360+error+1):
-					# whorl
-					singularity = 2
-				# print(poincare_index, singularity)
-
-				rectangle_coordinates = (16*j, 16*i), (16*(j+1), 16*(i+1))
-				if singularity == 1:
-					cv.rectangle(singularities, rectangle_coordinates[0], rectangle_coordinates[1], red, 3) # loop
-				elif singularity == -1:
-					cv.rectangle(singularities, rectangle_coordinates[0], rectangle_coordinates[1], green, 3) # delta
-				elif singularity == 1:
-					cv.rectangle(singularities, rectangle_coordinates[0], rectangle_coordinates[1], blue, 3) # whorl
-	return singularities       
 
 def minutae_extraction(fingerprint, enhanced_mask, block_size):
 	height, width = fingerprint.shape
