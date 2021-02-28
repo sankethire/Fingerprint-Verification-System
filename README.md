@@ -1,5 +1,18 @@
 # Fingerprint Verification System
 
+Original Fingerprint             |  Segmented Boundary    |   Segmented Image
+:-------------------------:|:-------------------------:|:-------------------------:
+![original fingerprint 1](https://user-images.githubusercontent.com/26035692/109406887-a1bb4680-79a2-11eb-9e23-f4338314cd05.png)  |  ![segmented boundary 1](https://user-images.githubusercontent.com/26035692/109406900-bd265180-79a2-11eb-8fa9-2e3637cf0617.png)  |  ![segmented image 1](https://user-images.githubusercontent.com/26035692/109406937-ffe82980-79a2-11eb-80f3-300be48e5038.png)
+
+Normalized Image             |  Orientation Field    |   Enhanced Image
+:-------------------------:|:-------------------------:|:-------------------------:
+![normalized image 1](https://user-images.githubusercontent.com/26035692/109406955-2c9c4100-79a3-11eb-90e5-e7682ae14ea5.png)  |  ![orientation filed on normalized image 1](https://user-images.githubusercontent.com/26035692/109406965-43429800-79a3-11eb-9834-785b6d076b6a.png)  |  ![enhanced image 1](https://user-images.githubusercontent.com/26035692/109406981-640aed80-79a3-11eb-8e34-7d65011bb482.png)
+
+Thinned Image             |  Minutiae Points (with false positives)    |   Minutiae Points (without false positives)
+:-------------------------:|:-------------------------:|:-------------------------:
+![thinned image 1](https://user-images.githubusercontent.com/26035692/109407052-e1366280-79a3-11eb-959b-77df5b65fbaa.png)  |  ![minutae points with false positives 1](https://user-images.githubusercontent.com/26035692/109407056-e7c4da00-79a3-11eb-9621-7115222355ba.png)  |  ![minutae points after false positives removal](https://user-images.githubusercontent.com/26035692/109407058-ec898e00-79a3-11eb-87d8-f117ac3b4028.png)
+
+
 ---
 
 ## Requirements
@@ -14,7 +27,7 @@
 ## How to run the program
 
 - Run the program using command: ```python3 main.py```
-- In order to see the next image, use ```ESC``` key only, over the OpenCV mage window.
+- In order to see the next image, use ```ESC``` key only, over the OpenCV Image window.
 
 ---
 
